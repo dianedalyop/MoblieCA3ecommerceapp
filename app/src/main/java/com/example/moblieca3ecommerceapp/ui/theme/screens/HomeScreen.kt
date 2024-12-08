@@ -6,9 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -25,8 +27,12 @@ fun HomeScreen() {
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { /* TODO: Add navigation logic here */ }) {
+            Button(onClick = {
+                navController.navigate("shop")
+            }) {
                 Text("Shop Now")
+
+
             }
         }
     }

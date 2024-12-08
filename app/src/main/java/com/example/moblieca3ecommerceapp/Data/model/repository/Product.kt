@@ -1,8 +1,8 @@
-package com.example.moblieca3ecommerceapp.Data.model.repository
+package com.example.moblieca3ecommerceapp.data.model
 
 data class Product(
-    val id: String,
     val name: String,
-    val price: Double,
-    val imageUrl: String // URL for the product image
+    val color: String,
+    val size: String,
+    val imageUrl: String
 )

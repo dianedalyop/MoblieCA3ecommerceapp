@@ -65,7 +65,16 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.5.0")
     // DataStore for preferences
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
+// navigation
+    implementation ("androidx.navigation:navigation-compose:2.8.4")
+// Retrofit dependencies
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    // OkHttp for logging
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
+    // loading images
+    implementation("io.coil-kt:coil-compose:2.3.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
