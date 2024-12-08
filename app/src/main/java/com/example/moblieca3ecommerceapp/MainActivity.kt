@@ -14,15 +14,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.example.moblieca3ecommerceapp.ui.screens.HomeScreen
 import com.example.moblieca3ecommerceapp.ui.theme.MoblieCA3ecommerceappTheme
@@ -36,9 +43,23 @@ class MainActivity : ComponentActivity() {
 
             MoblieCA3ecommerceappTheme {
                 val navController = rememberNavController()
+                var products = remember { mutableStateOf<List<Product>>(emptyList()) }
+
                 NavHost(navController = navController, startDestination = "home") {
-                    composable("home") { HomeScreen(navController = navController) }
-                    composable("shop") { ShopScreen() } // Define your Shop screen here
+                    composable("home") {
+                        HomeScreen(navController = navController)
+                    }
+                    composable("shop") {
+                        ShopScreen(products.value, navController = navController)
+                    }
+                    composable("addProduct") {
+                        AddProductScreen(
+                            navController = navController,
+                            addProduct = { product ->
+                                products.value = products.value + product
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -46,27 +67,28 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ShopScreen() {
-    // Sample product list
-    val products = listOf(
-        Product("Baby Onesie", "Pink", "M", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSz2Mx3a8lJKVDR8gIL2sLhnjVhYKsKPanirw&s"),
-        Product("Baby T-Shirt", "Blue", "S", "https://example.com/tshirt.jpg"),
-        Product("Baby Pants", "Green", "L", "https://example.com/pants.jpg"),
-        Product("Baby Jacket", "Red", "XL", "https://example.com/jacket.jpg"),
-        Product("Baby Hat", "Yellow", "M", "https://example.com/hat.jpg")
-    )
-
-
+fun ShopScreen(products: List<Product>, navController: NavHostController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        LazyColumn(
+        Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            items(products) { product ->
-                ProductCard(product)
-                Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = { navController.navigate("addProduct") },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            ) {
+                Text("Add New Product")
+            }
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(products) { product ->
+                    ProductCard(product)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
@@ -99,7 +121,73 @@ fun ProductCard(product: Product) {
                 Text(text = "Color: ${product.color}", style = MaterialTheme.typography.bodyMedium)
                 Text(text = "Size: ${product.size}", style = MaterialTheme.typography.bodyMedium)
             }
-            // You can add an Image here or any other UI elements
+        }
+    }
+}
+
+@Composable
+fun AddProductScreen(navController: NavHostController, addProduct: (Product) -> Unit) {
+    var name by remember { mutableStateOf("") }
+    var color by remember { mutableStateOf("") }
+    var size by remember { mutableStateOf("") }
+    var imageUrl by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+
+        TextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Product Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+
+        TextField(
+            value = color,
+            onValueChange = { color = it },
+            label = { Text("Color") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+
+        TextField(
+            value = size,
+            onValueChange = { size = it },
+            label = { Text("Size") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+
+        TextField(
+            value = imageUrl,
+            onValueChange = { imageUrl = it },
+            label = { Text("Image URL") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Save Button
+        Button(
+            onClick = {
+                if (name.isNotBlank() && color.isNotBlank() && size.isNotBlank() && imageUrl.isNotBlank()) {
+                    addProduct(Product(name, color, size, imageUrl))
+                    navController.popBackStack() //  back to the ShopScreen
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Add Product")
         }
     }
 }
