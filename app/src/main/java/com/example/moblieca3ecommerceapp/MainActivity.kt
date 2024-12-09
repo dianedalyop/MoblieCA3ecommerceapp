@@ -1,193 +1,182 @@
 package com.example.moblieca3ecommerceapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.*
-import com.example.moblieca3ecommerceapp.ui.screens.HomeScreen
-import com.example.moblieca3ecommerceapp.ui.theme.MoblieCA3ecommerceappTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
-import com.example.moblieca3ecommerceapp.data.model.Product
+import com.example.moblieca3ecommerceapp.ui.theme.MoblieCA3ecommerceappTheme
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
 
-            MoblieCA3ecommerceappTheme {
-                val navController = rememberNavController()
-                var products = remember { mutableStateOf<List<Product>>(emptyList()) }
+data class Product(
+    val id: Int,
+    val name: String,
+    val price: String,
+    val imageUrl: String
+)
 
-                NavHost(navController = navController, startDestination = "home") {
-                    composable("home") {
-                        HomeScreen(navController = navController)
-                    }
-                    composable("shop") {
-                        ShopScreen(products.value, navController = navController)
-                    }
-                    composable("addProduct") {
-                        AddProductScreen(
-                            navController = navController,
-                            addProduct = { product ->
-                                products.value = products.value + product
-                            }
-                        )
-                    }
+val sampleProducts = listOf(
+    Product(id = 1, name = "Baby Shirt", price = "$15", imageUrl = "https://via.placeholder.com/150"),
+    Product(id = 2, name = "Baby Pants", price = "$20", imageUrl = "https://via.placeholder.com/150"),
+    Product(id = 3, name = "Baby Shoes", price = "$25", imageUrl = "https://via.placeholder.com/150"),
+    Product(id = 4, name = "Baby Shirt", price = "$15", imageUrl = "https://via.placeholder.com/150"),
+    Product(id = 5, name = "Baby Pants", price = "$20", imageUrl = "https://via.placeholder.com/150"),
+    Product(id = 6, name = "Baby Shirt", price = "$15", imageUrl = "https://via.placeholder.com/150"),
+    Product(id = 7, name = "Baby Pants", price = "$20", imageUrl = "https://via.placeholder.com/150"),
+    Product(id = 8, name = "Baby Shirt", price = "$15", imageUrl = "https://via.placeholder.com/150"),
+    Product(id = 9, name = "Baby Pants", price = "$20", imageUrl = "https://via.placeholder.com/150"),
+    Product(id = 10, name = "Baby Shirt", price = "$15", imageUrl = "https://via.placeholder.com/150"),
+
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ShopScreen(navController: NavHostController) { // Renamed HomeScreen to ShopScreen
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text(text = "Snuggle Wear") })
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            contentPadding = innerPadding, // Ensures the content doesn't overlap with the TopAppBar
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            items(sampleProducts) { product ->
+                ProductCard(product) {
+                    navController.navigate("details/${product.id}")
                 }
             }
         }
     }
 }
-
 @Composable
-fun ShopScreen(products: List<Product>, navController: NavHostController) {
+fun HomeScreen(navController: NavHostController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Button(
-                onClick = { navController.navigate("addProduct") },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-            ) {
-                Text("Add New Product")
-            }
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(products) { product ->
-                    ProductCard(product)
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ProductCard(product: Product) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-
-
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center // Center all elements
         ) {
-            // images
+            // Circular Image
             Image(
-                painter = rememberImagePainter(product.imageUrl),
-                contentDescription = product.name,
+                painter = rememberImagePainter(data = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmiL5ThV248tPrHxEy5AeA4nI6bwMkaSufSg&s/300"),
+                contentDescription = "Welcome Image",
                 modifier = Modifier
-                    .size(80.dp)
-                    .padding(end = 16.dp)
+                    .size(200.dp) // Set width and height (image will be square before clipping)
+                    .clip(CircleShape) // Apply circular shape
+                    .padding(8.dp) // Optional: padding around the circle
             )
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = product.name, style = MaterialTheme.typography.bodyLarge)
-                Text(text = "Color: ${product.color}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Size: ${product.size}", style = MaterialTheme.typography.bodyMedium)
+
+            // Welcome Text
+            Text(
+                text = "Welcome to SnuggleWear!",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+
+            // Spacer to separate the text and button
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Shop Now Button
+            Button(onClick = {
+                navController.navigate("shop") // Navigate to ShopScreen
+            }) {
+                Text("Shop Now")
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ProductCard(product: Product, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(modifier = Modifier.padding(16.dp)) {
+            Image(
+                painter = rememberImagePainter(data = product.imageUrl),
+                contentDescription = "Product Image",
+                modifier = Modifier.size(60.dp).padding(end = 16.dp)
+            )
+            Column {
+                Text(text = product.name, style = MaterialTheme.typography.titleMedium)
+                Text(text = product.price, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
 }
 
 @Composable
-fun AddProductScreen(navController: NavHostController, addProduct: (Product) -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var color by remember { mutableStateOf("") }
-    var size by remember { mutableStateOf("") }
-    var imageUrl by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-
-        TextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Product Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-
-        TextField(
-            value = color,
-            onValueChange = { color = it },
-            label = { Text("Color") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-
-        TextField(
-            value = size,
-            onValueChange = { size = it },
-            label = { Text("Size") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-
-        TextField(
-            value = imageUrl,
-            onValueChange = { imageUrl = it },
-            label = { Text("Image URL") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Save Button
-        Button(
-            onClick = {
-                if (name.isNotBlank() && color.isNotBlank() && size.isNotBlank() && imageUrl.isNotBlank()) {
-                    addProduct(Product(name, color, size, imageUrl))
-                    navController.popBackStack() //  back to the ShopScreen
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+fun ProductDetailScreen(productId: Int) {
+    val product = sampleProducts.firstOrNull { it.id == productId }
+    if (product != null) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Text("Add Product")
+            Text(text = product.name, style = MaterialTheme.typography.headlineMedium)
+            Text(text = product.price, style = MaterialTheme.typography.titleLarge)
+        }
+    } else {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Product not found", style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Composable
+fun AppNavigation() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") { HomeScreen(navController) } // Welcome Screen
+        composable("shop") { ShopScreen(navController) } // Shop Screen
+        composable("details/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId")?.toInt() ?: 0
+            ProductDetailScreen(productId)
+        }
+    }
+}
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MoblieCA3ecommerceappTheme {
+                AppNavigation()
+            }
         }
     }
 }
