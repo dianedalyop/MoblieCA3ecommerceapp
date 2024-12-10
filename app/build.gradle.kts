@@ -1,7 +1,14 @@
+
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
+
+
+
 
 android {
     namespace = "com.example.moblieca3ecommerceapp"
@@ -50,7 +57,14 @@ android {
 }
 
 dependencies {
+    val room_version = "2.6.1" // Or your preferred version
 
+    // Room for local database
+    implementation("androidx.room:room-runtime:$room_version") // Required
+    kapt("androidx.room:room-compiler:$room_version")          // Annotation processor (Required for Room)
+
+    // Optional: Room with Kotlin Coroutines
+    implementation("androidx.room:room-ktx:$room_version")
     // Jetpack Compose
     implementation ("androidx.compose.ui:ui:1.3.0")
     implementation ("androidx.compose.material3:material3:1.0.0")
@@ -61,8 +75,8 @@ dependencies {
     // Coil for image loading
     implementation ("io.coil-kt:coil-compose:2.2.2")
     // Room for local database
-    implementation ("androidx.room:room-runtime:2.5.0")
-    implementation ("androidx.room:room-ktx:2.5.0")
+
+
     // DataStore for preferences
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
 // navigation
@@ -75,6 +89,11 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
     // loading images
     implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // room DB
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
